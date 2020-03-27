@@ -1,6 +1,8 @@
 ## Checklist
 - [x]	Add jsonschema validator
+- [ ]	Check that we catch all exception and return info about it
 - [ ]	Add logging in all processes
+- [ ]	Separate tasks.py -> base_task.py, observer.py, api.py, tasks.py (main)
 - [ ]	Separate getting results from getting job status
 - [ ]	Fix tests
 - [ ]	Add DB for synching between processess and for saving progress and result after stoping script
