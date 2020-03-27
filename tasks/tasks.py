@@ -6,6 +6,8 @@ from pprint import pprint
 import json
 import argparse
 
+import jsonschema
+
 
 # Register for task-units
 TASK_LINE = {}
@@ -127,11 +129,32 @@ class TaskObserver(Thread):
 
             self.check_init_task()
 
+    @staticmethod
+    def validate_params(schema, params: dict):
+                """Validate parameters using json_schema
+                If schema is None -> Ok
+                If schema is valid -> Ok
+                If schema is not valid -> raise json_schema.ValidationError
+
+                Arguments:
+                    params {[dict, Any]} -- parameters for task-function
+                """
+                if schema:
+                    jsonschema.validate(instance=params, schema=schema)
+
     def start_task(self, task: Task_IO):
         """
         Arguments:
             name {[type]} -- [description]
         """
+        schema = TASK_LINE[task.name].json_schema
+        try:
+            self.validate_params(schema, task.params)
+        except Exception as e:
+            TASK_QUEUE[task.id].status = "Failed"
+            TASK_QUEUE[task.id].result = "ValidationError: " + str(e.args[0])
+            return
+
         task.status = "In process"
 
         process = TASK_LINE[task.name](task, self.task_updates)
@@ -238,6 +261,15 @@ def run_cli():
         task = Task_IO(name, params)
         task.id = task_id
         our_connection = Queue()
+
+        schema = TASK_LINE[task.name].json_schema
+        try:
+            TaskObserver.validate_params(schema, task.params)
+        except jsonschema.ValidationError as e:
+            task.status = "Failed"
+            task.result = "Schema ValidationError"
+            print(task.__dict__)
+            return
 
         proc = TASK_LINE[task.name](task, our_connection)
         proc.start()
