@@ -46,7 +46,7 @@ class A(tasks.BaseTask):
 	name = "name_of_task_2"
 	json_schema = None # If not none -> validate params
 
-	def run(params):
+	def run(self, params):
 		some_arg_1, some_arg_2 = params["some_arg_1"], params["some_arg_2"]
 		# do something
 		result = some_arg_1 * some_arg_2
