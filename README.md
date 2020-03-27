@@ -1,22 +1,22 @@
-Side package:
-jsonschema
-flask
-pytest
+## Side packages:
+* jsonschema
+* flask
+* pytest
 
-Main:
+## Main:
 * tasks -- main lib
 * api -- api (flask) for tasks
 
-Tests:
+## Tests:
 * cli_test -- main test file, ready for cli using and runserver (that how users should use it)
 * test_main -- main pytest with 42 passed tests
 * test_cases -- cases for pytests in test_main (Task.run() and API post methods)
 * test_stress_api -- little stress test for multiprocess 
 
 
-==========================================================
+---
+# Main API:
 ```
-API:
 # my_tasks.py
 import tasks
 
@@ -44,13 +44,13 @@ class A(tasks.BaseTask):
 if __name__ == "__main__":
 	tasks.cli_run()
 ```
-==========================================================
-In terminal:
+---
+# In terminal:
 ```
 > python my_tasks.py name_of_task_2 -p '{"some_arg_1": 5, "some_arg_2": 10}'
 >- 50
 ```
-==========================================================
+---
 # With API
 ```
 > python my_tasks.py runserver
