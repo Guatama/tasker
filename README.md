@@ -1,3 +1,12 @@
+## Checklist
+- [x]	Add jsonschema validator
+- [ ]	Add logging in all processes
+- [ ]	Separate getting results from getting job status
+- [ ]	Fix tests
+- [ ]	Add DB for synching between processess and for saving progress and result after stoping script
+- [ ]	Other cool features... ^^
+
+
 ## Side packages:
 * jsonschema
 * flask
