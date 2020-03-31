@@ -62,8 +62,12 @@ class BaseTask(Process):
         try:
             self.task.result = self.run_task(self.task.params)
 
+        except KeyError as e:
+            error_text = f"KeyError: {e.args[0]}"
+            self._return_result(err_msg=error_text)
+            return
         except Exception as e:
-            self._return_result(err_msg=e.args[0])
+            self._return_result(err_msg=e.args)
 
         self._return_result()
 
