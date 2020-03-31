@@ -35,8 +35,7 @@ import tasks
 
 # With decorator
 @tasks.task("name_of_task_1", json_schema=None)
-def function(params):
-	some_arg_1, some_arg_2 = params["some_arg_1"], params["some_arg_2"]
+def function(some_arg_1, some_arg_2):
 	# do something
 	result = some_arg_1 * some_arg_2
 	return result
@@ -46,8 +45,7 @@ class A(tasks.BaseTask):
 	name = "name_of_task_2"
 	json_schema = None # If not none -> validate params
 
-	def run(self, params):
-		some_arg_1, some_arg_2 = params["some_arg_1"], params["some_arg_2"]
+	def run(self, some_arg_1, some_arg_2):
 		# do something
 		result = some_arg_1 * some_arg_2
 		return result
