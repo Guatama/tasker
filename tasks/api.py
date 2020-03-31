@@ -5,7 +5,6 @@ import tasks.tasks as tasks
 
 TASK_LINE = tasks.TASK_LINE
 TASK_QUEUE = tasks.TASK_QUEUE
-task_id = 0
 thread_lock = Lock()
 
 # TODO In future - use Blueprints for error-handling before creating app
@@ -36,8 +35,6 @@ def task_api():
         name {[str]} -- name of task in tasks.TASK_LINE
         params {[dict]} -- json data from request -> kwargs for task
     """
-    global task_id
-    task_id += 1
 
     try:
         json_input = request.get_json()
@@ -47,7 +44,6 @@ def task_api():
             name = json_input['task_name']
             params = json_input['params']
             task = tasks.Task_IO(name=name, params=params)
-            task.id = task_id
             thread_lock.acquire()
             TASK_QUEUE[task.id] = task
             thread_lock.release()

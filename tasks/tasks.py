@@ -8,6 +8,7 @@ import argparse
 
 import jsonschema
 
+from uuid import uuid4
 
 # Register for task-units
 TASK_LINE = {}
@@ -21,7 +22,7 @@ class Task_IO():
     def __init__(self, name, params):
         self.name = name
         self.params = params
-        self.id = None
+        self.id = uuid4().hex
         self.status = "Init"
         self.result = None
 
@@ -259,11 +260,10 @@ def run_cli():
         pprint({k: {'schema': v.json_schema} for (k, v) in TASK_LINE.items()})
         return
 
-    task_id = ('term', 0)
+
     # If task registered - run with arguments from params
     try:
         task = Task_IO(name, params)
-        task.id = task_id
         our_connection = Queue()
 
         schema = TASK_LINE[task.name].json_schema
