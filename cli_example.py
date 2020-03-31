@@ -4,8 +4,7 @@ from functools import reduce
 
 
 @tasks.task('charcount')
-def char_count(params):
-    text = params["text"]
+def char_count(text):
     count_char = 0
     count_space = 0
     for char in text:
@@ -25,12 +24,7 @@ def delay(params):
 
 
 @tasks.task('multiprint')
-def multi_print(params):
-    msg = params["msg"]
-    if "count" in params:
-        count = params["count"]
-    else:
-        count = 5
+def multi_print(msg, count=5):
     return '\n'.join(msg for _ in range(count))
 
 
@@ -48,21 +42,15 @@ class MultiPrint(tasks.BaseTask):
                                          },
                            'required': ['msg']}
 
-    def run_task(self, params):
-        msg = params["msg"]
-        if "count" in params:
-            count = params["count"]
-        else:
-            count = 5
+    def run_task(self, msg, count=5):
         return '\n'.join(msg for _ in range(count))
 
 
 class ManyArg(tasks.BaseTask):
     name = 'manyarg'
 
-    def run_task(self, params):
-        result = (params['a']**params['b']) * params['c'] + (params['f'] * params['e'] - params['g'])
-        result = "RESULT: " + str(result)
+    def run_task(self, a, b, c, d, e, f, g):
+        result = a ** b + c - (d * e) + f + g
         return result
 
 
@@ -78,8 +66,7 @@ class Multiply(tasks.BaseTask):
                             },
                        'required': ['operands']}
 
-    def run_task(self, params):
-        operands = params["operands"]
+    def run_task(self, operands):
         return reduce(lambda x, y: x*y, operands)
 
 

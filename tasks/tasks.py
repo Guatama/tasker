@@ -50,7 +50,7 @@ class BaseTask(Process):
         self.connection = our_connection
         self.mp_lock = Lock_mp()
 
-    def run_task(self, params):
+    def run_task(self, *args, **kwargs):
         """Override me"""
         pass
 
@@ -61,7 +61,7 @@ class BaseTask(Process):
         # print('run_task', os.getpid())
         # print(self.task.__dict__)
         try:
-            self.task.result = self.run_task(self.task.params)
+            self.task.result = self.run_task(**self.task.params)
             self._return_result()
 
         except KeyError as e:
@@ -215,10 +215,10 @@ def task(in_name: str, in_json_schema: dict = None):
             name = in_name
             json_schema = in_json_schema
 
-            def run_task(self, params):
+            def run_task(self, *args, **kwargs):
                 # args_len = func.__code__.co_argcount
                 # args = func.__code__.co_varnames[:args_len]
-                return func(params)
+                return func(*args, **kwargs)
 
         cls = New_Task
 
