@@ -62,15 +62,16 @@ class BaseTask(Process):
         # print(self.task.__dict__)
         try:
             self.task.result = self.run_task(self.task.params)
+            self._return_result()
 
         except KeyError as e:
             error_text = f"KeyError: {e.args[0]}"
             self._return_result(err_msg=error_text)
             return
+
         except Exception as e:
             self._return_result(err_msg=e.args[0])
-
-        self._return_result()
+            return
 
     def _return_result(self, err_msg=None):
         """Put result of task into inter-process
@@ -79,7 +80,7 @@ class BaseTask(Process):
         Keyword Arguments:
             err_msg {[str]} -- error message for result (default: {None})
         """
-        if not err_msg:
+        if err_msg is None:
             self.task.status = "Done"
         else:
             self.task.status = "Failed"
@@ -119,17 +120,24 @@ class TaskObserver(Thread):
                 self.check_init_task()
                 continue
 
+            self.check_init_task()
             if task.status == "Done":
                 self._result_out(task)
                 self.task_proc[task.id].join()
-                print(task.name, task.id, ' : DONE')
+                # print(task.name, task.id, ' : DONE')
                 del self.task_proc[task.id]
                 self.check_init_task()
 
             elif task.status == "Failed":
                 self._result_out(task)
+                self.task_proc[task.id].join()
+                del self.task_proc[task.id]
+                self.check_init_task()
+
             else:
                 self._result_out(task)
+                self.check_init_task()
+
                 continue
 
             self.check_init_task()
