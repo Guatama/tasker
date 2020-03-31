@@ -68,7 +68,7 @@ class BaseTask(Process):
             self._return_result(err_msg=error_text)
             return
         except Exception as e:
-            self._return_result(err_msg=e.args)
+            self._return_result(err_msg=e.args[0])
 
         self._return_result()
 

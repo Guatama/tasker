@@ -39,6 +39,8 @@ def task_api():
     try:
         json_input = request.get_json()
         method = json_input['method']
+        if json_input['task_name'] not in TASK_LINE:
+            raise KeyError(json_input['task_name'])
 
         if method == 'start':
             name = json_input['task_name']
