@@ -39,7 +39,7 @@ class BaseTask(Process):
         """
         super().__init_subclass__(**kwargs)
 
-        if 'run_task' not in cls.__dict__:
+        if hasattr(cls, 'run_task'):
             raise NotImplementedError
         if cls.name is not None:
             TASK_LINE[cls.name] = cls
@@ -58,8 +58,6 @@ class BaseTask(Process):
         """Run function which override Process.run - and automaticaly
         execute when we starting the process (BaseTask_obj.start())
         """
-        # print('run_task', os.getpid())
-        # print(self.task.__dict__)
         try:
             self.task.result = self.run_task(**self.task.params)
             self._return_result()
@@ -68,7 +66,8 @@ class BaseTask(Process):
             error_text = f"KeyError: {e.args[0]}"
             self._return_result(err_msg=error_text)
             return
-
+# BUG Serialize exception
+# TODO Check for None
         except Exception as e:
             self._return_result(err_msg=e.args[0])
             return
@@ -85,7 +84,7 @@ class BaseTask(Process):
         else:
             self.task.status = "Failed"
             self.task.result = err_msg
-
+# BUG If object is not-serializable
         self.connection.put(self.task)
 
 
@@ -99,7 +98,6 @@ class TaskObserver(Thread):
         self.thread_lock = Lock()
         self.mp_lock = Lock_mp()
         self.task_updates = Queue()
-        # self.results = {}
         self.task_id = 0
 
     def run(self):
@@ -108,23 +106,17 @@ class TaskObserver(Thread):
         """
         self.check_init_task()
         while True:
-            # if self.task_updates.empty():
-            #     self.check_init_task()
-            #     continue
-            # else:
-            #     task = self.task_updates.get()
+            self.check_init_task()
             try:
-                task = self.task_updates.get(False, 3)
+                task = self.task_updates.get(True, 5)
                 print(task.__dict__)
             except queues.Empty:
                 self.check_init_task()
                 continue
 
-            self.check_init_task()
             if task.status == "Done":
                 self._result_out(task)
                 self.task_proc[task.id].join()
-                # print(task.name, task.id, ' : DONE')
                 del self.task_proc[task.id]
                 self.check_init_task()
 
@@ -137,7 +129,6 @@ class TaskObserver(Thread):
             else:
                 self._result_out(task)
                 self.check_init_task()
-
                 continue
 
             self.check_init_task()
@@ -163,7 +154,7 @@ class TaskObserver(Thread):
         schema = TASK_LINE[task.name].json_schema
         try:
             self.validate_params(schema, task.params)
-        except Exception as e:
+        except jsonschema.ValidationError as e:
             TASK_QUEUE[task.id].status = "Failed"
             TASK_QUEUE[task.id].result = "ValidationError: " + str(e.args[0])
             return
@@ -176,7 +167,6 @@ class TaskObserver(Thread):
         process.start()
 
         TASK_QUEUE[task.id].status = task.status
-        # self.task_updates.put({"command": "run"})
 
     def _result_out(self, task_message):
         self.thread_lock.acquire()
@@ -190,6 +180,7 @@ class TaskObserver(Thread):
             for task in init_tasks:
                 if task.id not in self.task_proc:
                     self.start_task(task)
+        # TODO change this exception
         except Exception as e:
             pass
 
@@ -250,6 +241,8 @@ def run_cli():
         # print(current_thread())
         observer = TaskObserver()
         from tasks.api import run_webserver
+
+    # BUG Экспешен из дочернего треда в главном не перехватить
         try:
             proc = Thread(target=run_webserver)
 

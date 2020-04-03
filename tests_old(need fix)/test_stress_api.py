@@ -30,7 +30,8 @@ def get_api(url):
 def main():
     HOST = 'http://127.0.0.1:5000/api'
     json_data = {'method': 'start', 'task_name': 'mult', 'params':{'operands': [3, 2, 8]}}
-    args = ((HOST, json_data) for _ in range(19))
+    # json_data = {"method": "start", "task_name": "delay", "params": {}}
+    args = ((HOST, json_data) for _ in range(100))
     r = multithreading(lambda p: post_api(*p), args)
     print(r)
 

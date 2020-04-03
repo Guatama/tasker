@@ -2,7 +2,7 @@ from flask import Flask, request
 from threading import Lock
 import tasks.tasks as tasks
 
-
+# TODO Multiprocessing API throuhg WSGI
 TASK_LINE = tasks.TASK_LINE
 TASK_QUEUE = tasks.TASK_QUEUE
 thread_lock = Lock()
@@ -54,6 +54,7 @@ def task_api():
 
         elif method == 'status':
             thread_lock.acquire()
+            # BUG If KeyError - lock doesn't release
             task = TASK_QUEUE[json_input['task_id']]
             thread_lock.release()
             print("STATUS:", task.id, task.status)
@@ -82,6 +83,7 @@ def task_api():
         return result
 
     except Exception as e:
+        # BUG get_description() only for HTTPError
         return {"status": str(e.code), "msg": str(e.get_description())}
 
 

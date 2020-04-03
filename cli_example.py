@@ -16,7 +16,7 @@ def char_count(text):
 
 
 @tasks.task('delay')
-def delay(params):
+def delay():
     import time
     print('start delay')
     time.sleep(20)
