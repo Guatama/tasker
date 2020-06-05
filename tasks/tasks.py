@@ -39,7 +39,7 @@ class BaseTask(Process):
         """
         super().__init_subclass__(**kwargs)
 
-        if hasattr(cls, 'run_task'):
+        if not hasattr(cls, 'run_task'):
             raise NotImplementedError
         if cls.name is not None:
             TASK_LINE[cls.name] = cls
