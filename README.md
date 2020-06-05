@@ -1,3 +1,6 @@
+## What is Tasker?
+This is a framework for creating a regular launch of tasks with parallelizing the processes of their execution.
+
 ## Checklist
 - [x]	Add jsonschema validator
 - [ ]	Check that we catch all exception and return info about it
