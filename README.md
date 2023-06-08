@@ -30,7 +30,7 @@ This is a framework for creating a regular launch of tasks with parallelizing th
 
 ---
 # Main API:
-```
+```python
 # my_tasks.py
 import tasks
 
@@ -58,13 +58,13 @@ if __name__ == "__main__":
 ```
 ---
 # In terminal:
-```
+```bash
 > python my_tasks.py name_of_task_2 -p '{"some_arg_1": 5, "some_arg_2": 10}'
 >- 50
 ```
 ---
 # With API
-```
+```bash
 > python my_tasks.py runserver
 
 -> htt post http://0.0.0.0:5000/api
